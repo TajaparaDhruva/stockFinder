@@ -35,7 +35,7 @@ const SignIn = () => {
       if (response.data.success) {
         localStorage.setItem('token', response.data.token);
         toast.success('Successfully authenticated!');
-        // navigate('/dashboard'); // Normally redirect here
+        navigate('/marketplace');
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to authenticate');
