@@ -5,6 +5,7 @@ import CreateAccount from './pages/CreateAccount';
 import SignIn from './pages/SignIn';
 import Marketplace from './pages/Marketplace';
 import ProductDetail from './pages/ProductDetail';
+import StoreDetail from './pages/StoreDetail';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/login" element={<SignIn />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/store/:id" element={<StoreDetail />} />
         <Route path="/" element={<Navigate to="/marketplace" />} />
       </Routes>
     </BrowserRouter>
