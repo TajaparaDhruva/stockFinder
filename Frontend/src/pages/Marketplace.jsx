@@ -15,8 +15,8 @@ const Marketplace = () => {
   const { results: searchResults, status: searchStatus } = useSelector((state) => state.search);
 
   useEffect(() => {
-    // Mock user location for nearby stores
-    dispatch(fetchNearbyStores({ lat: 18.99, lng: 72.82 }));
+    // Mock user location for nearby stores (Ahmedabad, Gujarat)
+    dispatch(fetchNearbyStores({ lat: 23.0225, lng: 72.5714 }));
     dispatch(fetchProducts());
   }, [dispatch]);
 
@@ -56,7 +56,7 @@ const Marketplace = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-gray-400 text-base max-w-2xl mx-auto mb-2 font-medium opacity-80"
           >
-            Real-time inventory intelligence across Mumbai's elite retailers. Precision data for the discerning shopper.
+            Real-time inventory intelligence across Gujarat's elite retailers. Precision data for the discerning shopper.
           </motion.p>
 
           <SearchBar />
