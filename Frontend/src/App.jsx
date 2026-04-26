@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import CreateAccount from './pages/CreateAccount';
 import SignIn from './pages/SignIn';
 import Marketplace from './pages/Marketplace';
+import ProductDetail from './pages/ProductDetail';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/register" element={<CreateAccount />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/" element={<Navigate to="/marketplace" />} />
       </Routes>
     </BrowserRouter>

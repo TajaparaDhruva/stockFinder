@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const getStockBadge = (status) => {
   switch (status) {
@@ -15,6 +16,7 @@ const getStockBadge = (status) => {
 };
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
   const badge = getStockBadge(product.status);
   
   const formattedPrice = new Intl.NumberFormat('en-IN', {
@@ -26,6 +28,7 @@ const ProductCard = ({ product }) => {
   return (
     <motion.div 
       whileHover={{ y: -10 }}
+      onClick={() => navigate(`/product/${product._id}`)}
       className="bg-[#111827]/40 backdrop-blur-md border border-white/5 rounded-[2rem] overflow-hidden transition-all hover:border-primary/40 group cursor-pointer flex flex-col h-full shadow-2xl"
     >
       <div className="relative aspect-square p-4 flex items-center justify-center">
