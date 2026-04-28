@@ -6,6 +6,8 @@ import SignIn from './pages/SignIn';
 import Marketplace from './pages/Marketplace';
 import ProductDetail from './pages/ProductDetail';
 import StoreDetail from './pages/StoreDetail';
+import AllStores from './pages/AllStores';
+import AllProducts from './pages/AllProducts';
 
 function App() {
   return (
@@ -22,7 +24,9 @@ function App() {
         <Route path="/login" element={<SignIn />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/products" element={<AllProducts />} />
         <Route path="/store/:id" element={<StoreDetail />} />
+        <Route path="/stores" element={<AllStores />} />
         <Route path="/" element={<Navigate to="/marketplace" />} />
       </Routes>
     </BrowserRouter>
