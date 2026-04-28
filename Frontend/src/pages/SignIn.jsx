@@ -6,19 +6,22 @@ import { Mail, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 
-import FormWrapper from '../components/FormWrapper';
+import AuthLayout from '../components/AuthLayout';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
 import api from '../services/api';
+import authBg from '../assets/auth_bg.png';
 
 const schema = yup.object().shape({
-  email: yup.string().email('Invalid email address').required('Work email is required'),
+  email: yup.string().email('Invalid email address').required('Email is required'),
   password: yup.string().required('Password is required'),
 });
 
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState('customer');
   const navigate = useNavigate();
+  
   const { register, handleSubmit, formState: { errors, isValid } } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange'
@@ -29,62 +32,83 @@ const SignIn = () => {
     try {
       const response = await api.post('/auth/login', {
         email: data.email,
-        password: data.password
+        password: data.password,
+        role 
       });
       
       if (response.data.success) {
         localStorage.setItem('token', response.data.token);
-        toast.success('Successfully authenticated!');
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        toast.success(`Access Authorized.`);
         navigate('/marketplace');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to authenticate');
+      toast.error(error.response?.data?.message || 'Invalid credentials');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <FormWrapper 
-      title="Access Platform" 
-      subtitle="Authenticate to your retail dashboard."
+    <AuthLayout 
+      title="Login" 
+      subtitle="Enter secure gateway"
+      image={authBg}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        
-        <InputField
-          label="WORK EMAIL"
-          placeholder="name@retailer.com"
-          type="email"
-          icon={Mail}
-          error={errors.email}
-          {...register('email')}
-        />
-        
-        <div className="mb-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Role Pill Selection */}
+        <div>
+          <p className="text-[8px] font-black text-gray-700 uppercase tracking-widest mb-2">Role</p>
+          <div className="flex gap-2">
+            {['customer', 'retailer'].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r)}
+                className={`px-6 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all border ${
+                  role === r 
+                    ? 'bg-white text-black border-white' 
+                    : 'bg-transparent text-gray-600 border-white/5'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-1">
           <InputField
-            label="PASSWORD"
+            label="Email"
+            placeholder="email@example.com"
+            type="email"
+            icon={Mail}
+            error={errors.email}
+            {...register('email')}
+          />
+          <InputField
+            label="Password"
             placeholder="••••••••"
             type="password"
             icon={ShieldCheck}
             error={errors.password}
             {...register('password')}
           />
-          <div className="flex justify-end mt-1">
-             <a href="#" className="text-xs text-primary hover:text-white transition-colors">Forgot Password?</a>
-          </div>
         </div>
         
-        <Button type="submit" isLoading={isLoading} disabled={!isValid}>
-          Authenticate &rarr;
-        </Button>
+        <div className="pt-2">
+          <Button type="submit" isLoading={isLoading} disabled={!isValid}>
+            Sign In &rarr;
+          </Button>
+        </div>
         
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-400">
-            New to the platform? <Link to="/register" className="text-white font-semibold hover:text-primary transition-colors">Create Account</Link>
+        <div className="text-center pt-4">
+          <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
+            New user? <Link to="/register" className="text-primary hover:underline">Create Account Now</Link>
           </p>
         </div>
       </form>
-    </FormWrapper>
+    </AuthLayout>
   );
 };
 
