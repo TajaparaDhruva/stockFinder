@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const marketplaceRoutes = require('./routes/marketplaceRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const Store = require('./models/Store');
 const Product = require('./models/Product');
 
@@ -25,6 +26,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/cart', cartRoutes);
 
 const seedData = async () => {
   try {
@@ -308,7 +310,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000001'),
         name: 'Benyar Skeleton Watch',
         category: 'Watches',
-        price: 18500,
+        price: 6499,
         description: 'Intricate skeleton dial revealing the precision mechanical movement. Genuine black leather strap and stainless steel case for the modern gentleman. This masterpiece combines traditional watchmaking with a bold, contemporary aesthetic, making it the perfect statement piece for any occasion.',
         rating: 4.8,
         reviewsCount: 1240,
@@ -330,7 +332,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000002'),
         name: 'Nike Air Force 1 \'07',
         category: 'Clothe',
-        price: 9695,
+        price: 7499,
         description: 'The radiance lives on in the Nike Air Force 1 \'07 shoes, the b-ball icon that puts a fresh spin on what you know best: crisp leather, bold colors and the perfect amount of flash to make you shine. Originally designed for performance hoops, these shoes deliver lasting comfort while the padded ankle and tongue add to the soft ride.',
         rating: 4.9,
         reviewsCount: 4500,
@@ -354,7 +356,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000003'),
         name: 'Classic Square Sunglasses',
         category: 'Clothe',
-        price: 12500,
+        price: 2499,
         description: 'Iconic square frames with polarized lenses for ultimate clarity and 100% UV protection. Crafted from premium acetate with reinforced metal hinges, these sunglasses combine durability with a timeless aesthetic that complements any face shape and style.',
         rating: 4.7,
         reviewsCount: 890,
@@ -376,7 +378,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000004'),
         name: 'Apple AirPods Max',
         category: 'Electronic',
-        price: 59900,
+        price: 42999,
         description: 'AirPods Max reimagine over-ear headphones. An Apple-designed dynamic driver provides immersive high-fidelity audio. Every detail, from canopy to cushions, has been designed for an exceptional fit. Industry-leading Active Noise Cancellation blocks outside noise, while Transparency mode lets it in.',
         rating: 4.8,
         reviewsCount: 1540,
@@ -398,7 +400,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000005'),
         name: 'Diamond Solitaire Ring',
         category: 'Jewels',
-        price: 125000,
+        price: 84999,
         description: 'A classic 1-carat round brilliant cut diamond set in a signature 18k white gold four-prong setting. This exquisite solitaire ring captures the light from every angle, symbolizing eternal love and unmatched elegance. Certified for its clarity, color, and cut.',
         rating: 5,
         reviewsCount: 85,
@@ -421,7 +423,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000006'),
         name: 'LEGO Millennium Falcon',
         category: 'Toys',
-        price: 79999,
+        price: 54999,
         description: 'Welcome to the largest, most detailed LEGO Star Wars Millennium Falcon model ever created. With 7,500 pieces, it\'s one of the biggest LEGO models, period! This amazing LEGO interpretation of Han Solo’s unforgettable Corellian freighter has all the details that Star Wars fans of any age could wish for.',
         rating: 4.9,
         reviewsCount: 450,
@@ -442,7 +444,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000007'),
         name: 'Herman Miller Aeron',
         category: 'Spaces',
-        price: 145000,
+        price: 114999,
         description: 'The Herman Miller Aeron revolutionized office seating with its ergonomic design and breathable Pellicle suspension. Designed to support the human body in all its postures, it remains the gold standard for office comfort, health, and peak performance. Fully adjustable for a personalized fit.',
         rating: 4.8,
         reviewsCount: 890,
@@ -465,7 +467,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000008'),
         name: 'Silk Banarasi Saree',
         category: 'Clothe',
-        price: 45000,
+        price: 12499,
         description: 'Exquisite hand-woven silk saree with intricate zari work, straight from the heritage looms of Varanasi. Featuring traditional motifs and a rich border, this Banarasi saree is a testament to India\'s textile artistry, perfect for weddings and special celebrations.',
         rating: 4.9,
         reviewsCount: 120,
@@ -486,7 +488,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000009'),
         name: 'Bose QC Ultra',
         category: 'Electronic',
-        price: 39900,
+        price: 31999,
         description: 'Bose QuietComfort Ultra Headphones offer world-class noise cancellation, breakthrough spatialized audio for more immersive listening, and ultimate comfort. CustomTune technology personalizes the sound to your ears, so everything you listen to is at its best.',
         rating: 4.7,
         reviewsCount: 1540,
@@ -506,7 +508,7 @@ const seedData = async () => {
         _id: new mongoose.Types.ObjectId('662b00000000000000000010'),
         name: 'Blueberry Gift Box',
         category: 'Grocery',
-        price: 850,
+        price: 499,
         description: 'Experience the bursting flavor of plump, juicy, and antioxidant-rich blueberries. Hand-picked and imported for premium quality, this gift box contains the freshest Grade A berries, perfect for healthy snacking, baking, or as a thoughtful gourmet gift.',
         rating: 4.6,
         reviewsCount: 320,

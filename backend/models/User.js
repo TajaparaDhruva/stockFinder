@@ -31,6 +31,23 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  cart: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+      // Storing some snapshot data for quick access without populating
+      name: String,
+      price: Number,
+      image: String,
+      category: String,
+    }
+  ],
 });
 
 // Hash password before saving if it's modified
