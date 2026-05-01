@@ -7,11 +7,42 @@ const storeRoutes = require('./routes/storeRoutes');
 const Store = require('./models/Store');
 const Product = require('./models/Product');
 
-// Initialize the app
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // In production, restrict to frontend URL
+    methods: ['GET', 'POST', 'PATCH']
+  }
+});
+
+// Attach io to req object so controllers can use it
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
 const PORT = process.env.PORT || 5000;
+
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  // Join a specific negotiation room for real-time chat
+  socket.on('join_negotiation', (negotiationId) => {
+    socket.join(`negotiation_${negotiationId}`);
+    console.log(`Socket ${socket.id} joined negotiation ${negotiationId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/retailbridge')
@@ -544,6 +575,6 @@ const seedData = async () => {
   }
 };
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -6,7 +6,7 @@ const messageSchema = new mongoose.Schema({
   content: { type: String, required: true },
   type: { 
     type: String, 
-    enum: ['TEXT', 'OFFER', 'COUNTER', 'ACCEPT', 'REJECT'], 
+    enum: ['TEXT', 'OFFER', 'COUNTER', 'ACCEPT', 'REJECT', 'PHOTO'], 
     default: 'TEXT' 
   },
   offerAmount: { type: Number },
