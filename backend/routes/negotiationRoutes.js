@@ -5,14 +5,18 @@ const {
   getNegotiationDetails, 
   sendMessage, 
   acceptDeal,
-  getAcceptedNegotiations
+  getAcceptedNegotiations,
+  getStoreNegotiations,
+  deleteNegotiation
 } = require('../controllers/negotiationController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.post('/', protect, startNegotiation);
+router.get('/store', protect, getStoreNegotiations);
 router.get('/accepted', protect, getAcceptedNegotiations);
 router.get('/:id', protect, getNegotiationDetails);
 router.post('/:id/messages', protect, sendMessage);
 router.patch('/:id/accept', protect, acceptDeal);
+router.delete('/:id', protect, deleteNegotiation);
 
 module.exports = router;
