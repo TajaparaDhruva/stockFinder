@@ -7,35 +7,37 @@ const InputField = forwardRef(({ label, icon: Icon, error, type = 'text', ...pro
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
   return (
-    <div className="w-full mb-3 flex flex-col">
-      <label className="text-[9px] font-black mb-1 uppercase tracking-widest text-gray-600">
-        {label}
-      </label>
+    <div className="w-full mb-5 flex flex-col">
+      {label && (
+        <label className="text-[10px] font-black mb-1.5 uppercase tracking-widest text-subtext ml-1">
+          {label}
+        </label>
+      )}
       <div className="relative group">
-        <div className="relative flex items-center rounded-lg border border-white/5 bg-white/[0.03] focus-within:border-primary/40 focus-within:bg-white/[0.05] transition-all">
+        <div className="relative flex items-center rounded-xl border border-borderCustom bg-surface focus-within:border-primary/50 focus-within:shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-all duration-300">
           {Icon && (
-            <div className="pl-3 text-gray-600 group-focus-within:text-primary transition-colors">
-              <Icon size={14} />
+            <div className="pl-4 text-subtext group-focus-within:text-primary transition-colors">
+              <Icon size={16} />
             </div>
           )}
           <input
             ref={ref}
             type={inputType}
-            className="w-full bg-transparent py-2.5 px-3 focus:outline-none text-[12px] font-bold text-white placeholder-gray-700"
+            className="w-full bg-transparent py-3.5 px-4 focus:outline-none text-[13px] font-medium text-textMain placeholder:text-subtext/60"
             {...props}
           />
           {isPassword && (
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="pr-3 text-gray-600 hover:text-white transition-colors"
+              className="pr-4 text-subtext hover:text-textMain transition-colors"
             >
-              {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           )}
         </div>
         {error && (
-          <p className="text-red-500 text-[8px] font-black mt-1 uppercase tracking-tight">
+          <p className="text-red-500/80 text-[9px] font-bold mt-1.5 uppercase tracking-tight ml-1">
             {error.message}
           </p>
         )}

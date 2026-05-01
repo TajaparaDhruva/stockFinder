@@ -1,9 +1,12 @@
-import React from 'react';
-import { ShoppingCart, Bell, LogOut, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingCart, LogOut, User } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { clearMyStore } from '../redux/storeSlice';
+import { useSocket } from './../context/SocketContext';
+import ThemeToggle from './ThemeToggle';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -13,6 +16,7 @@ const Navbar = () => {
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const user = useSelector((state) => state.auth.user);
+  const socket = useSocket();
 
   const isActive = (path) => location.pathname === path;
 
@@ -31,93 +35,109 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f172a]/60 backdrop-blur-xl border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-sectionSurface/80 backdrop-blur-2xl border-b border-borderCustom">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          <div className="flex items-center gap-10">
-            <h1 className="text-white text-lg font-bold tracking-[0.2em] uppercase cursor-pointer" onClick={() => navigate(user?.role === 'retailer' ? '/dashboard' : '/marketplace')}>
+          <div className="flex items-center gap-12">
+            <h1 
+              className="text-textMain text-xl font-black tracking-[0.3em] uppercase cursor-pointer flex items-center gap-2 group" 
+              onClick={() => navigate(user?.role === 'retailer' ? '/dashboard' : '/marketplace')}
+            >
+              <div className="w-2 h-8 bg-accent group-hover:scale-y-110 transition-transform" />
               LUXE RETAIL
             </h1>
 
-            <div className="hidden md:flex space-x-8">
+            <div className="hidden md:flex space-x-10">
               {user?.role === 'retailer' ? (
                 <>
                   <Link 
                     to="/dashboard" 
-                    className={`${isActive('/dashboard') ? 'text-white border-b-2 border-primary' : 'text-gray-400 hover:text-white'} pb-5 mt-5 text-[11px] font-bold uppercase tracking-widest transition-all`}
+                    className={`${isActive('/dashboard') ? 'text-accent border-b-2 border-accent' : 'text-subtext hover:text-textMain'} pb-5 mt-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
                   >
                     Dashboard
+                  </Link>
+                  <Link 
+                    to="/dashboard/negotiations" 
+                    className={`${isActive('/dashboard/negotiations') ? 'text-accent border-b-2 border-accent' : 'text-subtext hover:text-textMain'} pb-5 mt-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
+                  >
+                    Negotiations
+                  </Link>
+                  <Link 
+                    to="/products" 
+                    className={`${isActive('/products') ? 'text-accent border-b-2 border-accent' : 'text-subtext hover:text-textMain'} pb-5 mt-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
+                  >
+                    Add Product
                   </Link>
                 </>
               ) : (
                 <>
                   <Link 
                     to="/marketplace" 
-                    className={`${isActive('/marketplace') ? 'text-white border-b-2 border-primary' : 'text-gray-400 hover:text-white'} pb-5 mt-5 text-[11px] font-bold uppercase tracking-widest transition-all`}
+                    className={`${isActive('/marketplace') ? 'text-accent border-b-2 border-accent' : 'text-subtext hover:text-textMain'} pb-5 mt-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
                   >
                     Marketplace
                   </Link>
                   <Link 
                     to="/stores" 
-                    className={`${isActive('/stores') ? 'text-white border-b-2 border-primary' : 'text-gray-400 hover:text-white'} pb-5 mt-5 text-[11px] font-bold uppercase tracking-widest transition-all`}
+                    className={`${isActive('/stores') ? 'text-accent border-b-2 border-accent' : 'text-subtext hover:text-textMain'} pb-5 mt-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
                   >
                     Stores
                   </Link>
                   <Link 
                     to="/products" 
-                    className={`${isActive('/products') ? 'text-white border-b-2 border-primary' : 'text-gray-400 hover:text-white'} pb-5 mt-5 text-[11px] font-bold uppercase tracking-widest transition-all`}
+                    className={`${isActive('/products') ? 'text-accent border-b-2 border-accent' : 'text-subtext hover:text-textMain'} pb-5 mt-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all`}
                   >
-                    Products
+                    Inventory
                   </Link>
                 </>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-5">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {user?.role !== 'retailer' && (
               <button
                 onClick={() => navigate('/cart')}
-                className="text-gray-400 hover:text-white transition-colors bg-white/5 p-2.5 rounded-lg hover:bg-white/10 relative"
+                className="text-subtext hover:text-textMain transition-all bg-surface/40 p-2.5 rounded-xl border border-borderCustom hover:bg-surface/60 relative group"
               >
-                <ShoppingCart size={18} strokeWidth={2.5} />
+                <ShoppingCart size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-blue-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(37,99,235,0.5)] animate-pulse">
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)] animate-pulse">
                     {cartCount > 9 ? '9+' : cartCount}
                   </span>
                 )}
               </button>
             )}
-            <button className="text-gray-400 hover:text-white transition-colors bg-white/5 p-2.5 rounded-lg hover:bg-white/10 relative">
-              <Bell size={18} strokeWidth={2.5} />
-            </button>
+
 
             {/* Account / Profile Button */}
             <button
-              className="ml-1 w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden group hover:border-primary transition-all shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
+              className="ml-1 w-10 h-10 rounded-xl bg-gradient-to-br from-surface to-background border border-borderCustom flex items-center justify-center overflow-hidden group hover:border-accent/50 transition-all shadow-xl"
               onClick={() => !user && navigate('/login')}
               title={user?.name || "Account"}
             >
               {user ? (
-                <span className="text-[11px] font-black tracking-tighter text-white group-hover:scale-110 transition-transform">
+                <span className="text-[10px] font-black tracking-tighter text-textMain group-hover:scale-110 transition-transform">
                   {getInitials(user.name)}
                 </span>
               ) : (
-                <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                   <User size={14} className="text-gray-500" />
+                <div className="w-full h-full bg-surface/50 flex items-center justify-center">
+                   <User size={16} className="text-subtext" />
                 </div>
               )}
             </button>
 
-            {/* Logout hidden in smaller profile menu or as separate icon */}
             {user && (
               <button
                 onClick={handleLogout}
-                className="ml-2 text-gray-500 hover:text-red-400 transition-colors"
+                className="ml-2 text-subtext hover:text-red-400 transition-colors"
                 title="Logout"
               >
-                <LogOut size={16} />
+                <LogOut size={18} />
               </button>
             )}
           </div>
@@ -129,4 +149,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

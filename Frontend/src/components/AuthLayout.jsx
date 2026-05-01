@@ -1,47 +1,63 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import ThemeToggle from './ThemeToggle';
 
-const AuthLayout = ({ children, title, subtitle, image, imageText }) => {
+const AuthLayout = ({ children, title, subtitle, image, imageText, reverse = false }) => {
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-black overflow-hidden font-sans">
+    <div className="h-screen w-full flex bg-background overflow-hidden font-sans">
+      {/* Theme Toggle Overlay */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle className="shadow-2xl backdrop-blur-xl" />
+      </div>
+
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-[95%] max-w-4xl h-[600px] flex rounded-3xl overflow-hidden bg-[#0a0a0a] border border-white/5 shadow-2xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className={`w-full h-full flex ${reverse ? 'flex-row-reverse' : 'flex-row'}`}
       >
-        {/* Left Side: Photo Type */}
-        <div className="hidden md:flex md:w-1/2 relative h-full">
+        {/* Visual Experience Side */}
+        <div className={`hidden md:flex md:w-1/2 xl:w-[60%] relative h-full overflow-hidden group ${reverse ? 'border-l' : 'border-r'} border-borderCustom`}>
           <img 
             src={image} 
             alt="Auth Background" 
-            className="absolute inset-0 w-full h-full object-cover opacity-60"
+            className="absolute inset-0 w-full h-full object-cover opacity-50 dark:opacity-40 group-hover:scale-105 transition-transform duration-[2000ms]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-          <div className="relative z-10 p-10 flex flex-col justify-end h-full">
-            <h2 className="text-2xl font-black tracking-tighter text-white uppercase">
-              <span className="text-primary">Stock</span>Finder
-            </h2>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
-              {imageText || "Premium Inventory Intelligence"}
-            </p>
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent dark:from-background dark:via-background/60" />
+          <div className="relative z-10 p-12 lg:p-20 flex flex-col justify-end h-full">
+            <div className="mb-12">
+              <div className="w-16 h-1.5 bg-accent rounded-full mb-6" />
+              <h2 className="text-5xl lg:text-7xl font-black tracking-tighter text-textMain uppercase leading-[0.9]">
+                <span className="text-primary italic">Luxe</span><br/>Retail
+              </h2>
+              <p className="text-subtext text-[11px] font-bold uppercase tracking-[0.4em] mt-8 border-l-4 border-accent/40 pl-6 max-w-xs leading-relaxed">
+                {imageText || "The ultimate standard in inventory intelligence and retail management."}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Right Side: Form Content - NO SCROLLBAR */}
-        <div className="w-full md:w-1/2 flex flex-col h-full bg-[#0d0d0d] relative overflow-hidden">
-          <div className="w-full max-w-[320px] mx-auto my-auto py-6">
-            <div className="mb-6">
-              <h1 className="text-2xl font-black text-white tracking-tight uppercase leading-none">{title}</h1>
-              <p className="text-gray-500 text-[9px] font-bold uppercase tracking-widest mt-1">{subtitle}</p>
+        {/* Form Content Side */}
+        <div className="w-full md:w-1/2 xl:w-[40%] flex flex-col h-full bg-surface relative overflow-y-auto scrollbar-thin">
+          <div className="w-full max-w-[420px] mx-auto my-auto py-16 px-10">
+            <div className="mb-12">
+              <h1 className="text-3xl lg:text-4xl font-black text-textMain tracking-tighter uppercase leading-none">{title}</h1>
+              <div className="flex items-center gap-4 mt-5">
+                <div className="h-[1px] flex-1 bg-borderCustom" />
+                <p className="text-subtext text-[10px] lg:text-[11px] font-bold uppercase tracking-[0.3em] whitespace-nowrap">{subtitle}</p>
+                <div className="h-[1px] w-8 bg-accent/40" />
+              </div>
             </div>
             
             <div className="flex flex-col">
               {children}
             </div>
             
-            <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[8px] text-gray-700 uppercase tracking-widest font-black">
-              <span>Secure Session</span>
-              <span>© 2026</span>
+            <div className="mt-16 pt-8 border-t border-borderCustom flex justify-between items-center text-[10px] text-subtext uppercase tracking-widest font-black">
+              <span className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                Encrypted Session
+              </span>
+              <span>© 2026 LUXE RETAIL</span>
             </div>
           </div>
         </div>
