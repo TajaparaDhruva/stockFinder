@@ -18,16 +18,25 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('specs');
   const [activeImage, setActiveImage] = useState(null);
+  const [negotiation, setNegotiation] = useState(null);
   
   const { user } = useSelector(state => state.auth);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await api.get(`/marketplace/products/${id}`);
-        setProduct(response.data.product);
-        setInventory(response.data.inventory);
-        setActiveImage(response.data.product.image);
+        const productRes = await api.get(`/marketplace/products/${id}`);
+        setProduct(productRes.data.product);
+        setInventory(productRes.data.inventory);
+        setActiveImage(productRes.data.product.image);
+
+        // Check for accepted negotiation if logged in
+        if (user) {
+          const negRes = await api.get(`/negotiations/check/${id}`);
+          if (negRes.data.success && negRes.data.negotiation) {
+            setNegotiation(negRes.data.negotiation);
+          }
+        }
       } catch (err) {
         console.error('Failed to fetch product:', err);
       } finally {
@@ -35,7 +44,7 @@ const ProductDetail = () => {
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, user]);
 
   if (loading) return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center">
@@ -107,9 +116,20 @@ const ProductDetail = () => {
 
           {/* Procurement Footer */}
           <div className="space-y-8 pt-12 border-t border-white/5">
-            <div className="flex items-center justify-between">
-              <span className="text-[40px] font-black italic tracking-tighter text-white">₹{inventory[0]?.price.toLocaleString('en-IN')}</span>
-              <div className="flex items-center gap-6 bg-white/5 p-2 px-4 rounded-xl border border-white/10">
+            <div className="flex flex-col gap-2">
+              {negotiation ? (
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-accent uppercase tracking-[0.4em] mb-1 italic">Negotiated_Price_Activated</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[40px] font-black italic tracking-tighter text-white">₹{negotiation.negotiatedPrice.toLocaleString('en-IN')}</span>
+                    <span className="text-lg font-bold text-white/30 line-through tracking-tighter italic">₹{inventory[0]?.price.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+              ) : (
+                <span className="text-[40px] font-black italic tracking-tighter text-white">₹{inventory[0]?.price.toLocaleString('en-IN')}</span>
+              )}
+              
+              <div className="flex items-center gap-6 bg-white/5 p-2 px-4 rounded-xl border border-white/10 w-fit">
                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-white/40 hover:text-white"><Minus size={14} /></button>
                 <span className="text-sm font-black italic">{quantity}</span>
                 <button onClick={() => setQuantity(quantity + 1)} className="text-white/40 hover:text-white"><Plus size={14} /></button>
@@ -119,8 +139,12 @@ const ProductDetail = () => {
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={() => {
-                  dispatch(addToCart({ ...product, quantity }));
-                  toast.success('SYNCED TO CART');
+                  dispatch(addToCart({ 
+                    ...product, 
+                    quantity, 
+                    negotiatedPrice: negotiation?.negotiatedPrice 
+                  }));
+                  toast.success(negotiation ? 'NEGOTIATED ASSET SYNCED' : 'SYNCED TO CART');
                 }}
                 className="bg-white text-black py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-accent transition-all shadow-xl shadow-white/5"
               >
@@ -128,9 +152,10 @@ const ProductDetail = () => {
               </button>
               <button 
                 onClick={() => navigate(`/negotiate/${id}`)}
-                className="border border-white/20 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:border-accent hover:text-accent italic transition-all"
+                className={`border py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] italic transition-all ${negotiation ? 'border-accent text-accent bg-accent/5 cursor-default' : 'border-white/20 hover:border-accent hover:text-accent'}`}
+                disabled={!!negotiation}
               >
-                Negotiate
+                {negotiation ? 'Deal_Accepted' : 'Negotiate'}
               </button>
             </div>
           </div>

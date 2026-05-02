@@ -63,20 +63,27 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const product = action.payload;
+      const finalPrice = product.negotiatedPrice || product.price;
       const existing = state.items.find(item => item._id === product._id);
+      
       if (existing) {
         existing.quantity += product.quantity || 1;
+        existing.price = finalPrice;
+        existing.originalPrice = product.price;
+        existing.isNegotiated = !!product.negotiatedPrice;
       } else {
         state.items.push({
           _id: product._id,
           name: product.name,
           category: product.category,
-          price: product.price,
+          price: finalPrice,
+          originalPrice: product.price,
           image: product.image,
           status: product.status,
           store: product.store,
           description: product.description,
           quantity: product.quantity || 1,
+          isNegotiated: !!product.negotiatedPrice
         });
       }
       saveCart(state.items);
