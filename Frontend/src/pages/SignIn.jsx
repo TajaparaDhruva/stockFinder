@@ -103,6 +103,7 @@ const SignIn = () => {
             type="password"
             icon={ShieldCheck}
             error={errors.password}
+            autoComplete="current-password"
             {...register('password')}
           />
         </div>
