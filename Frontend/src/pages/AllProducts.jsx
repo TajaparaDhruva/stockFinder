@@ -382,92 +382,145 @@ const AllProducts = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAddModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40 backdrop-blur-md"
             />
             
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-surface border border-borderCustom rounded-3xl shadow-2xl overflow-hidden z-10"
+              exit={{ opacity: 0, scale: 0.98, y: 10 }}
+              className="relative w-full max-w-4xl bg-[#0F0F0F] border border-white/5 rounded-[2rem] shadow-[0_40px_80px_rgba(0,0,0,0.8)] overflow-hidden z-10 flex flex-col max-h-[90vh]"
             >
-              <div className="flex justify-between items-center p-6 border-b border-borderCustom bg-sectionSurface">
-                <h3 className="text-xl font-bold text-textMain">Add New Product</h3>
+              {/* Header */}
+              <div className="flex justify-between items-center p-10 border-b border-white/5">
+                <div className="space-y-1">
+                   <h3 className="text-3xl font-light text-white tracking-tight">New Product Listing</h3>
+                   <p className="text-[10px] font-medium text-white/30 uppercase tracking-[0.3em]">Exhibition Entry // Store Inventory</p>
+                </div>
                 <button 
                   onClick={() => setShowAddModal(false)}
-                  className="p-2 bg-surface hover:bg-sectionSurface rounded-full transition-colors text-subtext hover:text-textMain"
+                  className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors text-white/40 hover:text-white"
                 >
                   <X size={20} />
                 </button>
               </div>
               
-              <div className="p-6 max-h-[70vh] overflow-y-auto scrollbar-thin">
-                <form onSubmit={handleAddSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputField label="Product Name" name="name" placeholder="e.g. Premium Watch" icon={Package} value={formData.name} onChange={handleFormChange} required />
-                    <InputField label="Category" name="category" placeholder="e.g. Watches, Electronic" icon={Tag} value={formData.category} onChange={handleFormChange} required />
+              <div className="p-10 overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleAddSubmit} className="space-y-16">
+                  
+                  {/* Basic Information */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                     <div className="lg:col-span-1">
+                        <h4 className="text-sm font-semibold text-white mb-2">Product Details</h4>
+                        <p className="text-xs text-white/40 leading-relaxed">Provide the essential identification details for your premium item.</p>
+                     </div>
+                     <div className="lg:col-span-2 space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <InputField label="Product Name" name="name" placeholder="e.g. Signature Leather Tote" icon={Package} value={formData.name} onChange={handleFormChange} required />
+                           <InputField label="Category" name="category" placeholder="e.g. Accessories, Leather" icon={Tag} value={formData.category} onChange={handleFormChange} required />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <InputField label="Price (₹)" name="price" type="number" placeholder="e.g. 45000" icon={IndianRupee} value={formData.price} onChange={handleFormChange} required />
+                           <InputField label="Description" name="description" placeholder="A brief narrative of the item..." icon={AlignLeft} value={formData.description} onChange={handleFormChange} required />
+                        </div>
+                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputField label="Price (₹)" name="price" type="number" placeholder="e.g. 15000" icon={IndianRupee} value={formData.price} onChange={handleFormChange} required />
+                  <div className="h-[1px] bg-white/5 w-full" />
+
+                  {/* Visual Gallery */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                     <div className="lg:col-span-1">
+                        <h4 className="text-sm font-semibold text-white mb-2">Visual Gallery</h4>
+                        <p className="text-xs text-white/40 leading-relaxed">Showcase your product with high-resolution imagery. The first image will be your main display.</p>
+                     </div>
+                     <div className="lg:col-span-2 space-y-6">
+                        <InputField label="Primary Cover Image" name="image1" placeholder="https://image-url.com" icon={ImageIcon} value={formData.image1 || ''} onChange={(e) => setFormData({ ...formData, image1: e.target.value })} required />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                           <div className="space-y-2">
+                              <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Detail 02</label>
+                              <InputField name="image2" placeholder="URL" icon={ImageIcon} value={formData.image2 || ''} onChange={(e) => setFormData({ ...formData, image2: e.target.value })} />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Detail 03</label>
+                              <InputField name="image3" placeholder="URL" icon={ImageIcon} value={formData.image3 || ''} onChange={(e) => setFormData({ ...formData, image3: e.target.value })} />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Detail 04</label>
+                              <InputField name="image4" placeholder="URL" icon={ImageIcon} value={formData.image4 || ''} onChange={(e) => setFormData({ ...formData, image4: e.target.value })} />
+                           </div>
+                        </div>
+                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <label className="text-xs font-black uppercase tracking-[0.2em] text-subtext ml-1">Product Images (up to 4)</label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <InputField name="image1" placeholder="Main Image URL" icon={ImageIcon} value={formData.image1 || ''} onChange={(e) => setFormData({ ...formData, image1: e.target.value })} required />
-                      <InputField name="image2" placeholder="Image URL 2 (optional)" icon={ImageIcon} value={formData.image2 || ''} onChange={(e) => setFormData({ ...formData, image2: e.target.value })} />
-                      <InputField name="image3" placeholder="Image URL 3 (optional)" icon={ImageIcon} value={formData.image3 || ''} onChange={(e) => setFormData({ ...formData, image3: e.target.value })} />
-                      <InputField name="image4" placeholder="Image URL 4 (optional)" icon={ImageIcon} value={formData.image4 || ''} onChange={(e) => setFormData({ ...formData, image4: e.target.value })} />
-                    </div>
+                  <div className="h-[1px] bg-white/5 w-full" />
+
+                  {/* Options */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-10">
+                     <div className="lg:col-span-1">
+                        <h4 className="text-sm font-semibold text-white mb-2">Specifications</h4>
+                        <p className="text-xs text-white/40 leading-relaxed">Define the available size options for this particular inventory line.</p>
+                     </div>
+                     <div className="lg:col-span-2 space-y-8">
+                        <div className="space-y-4">
+                           <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Select Size Category</label>
+                           <div className="flex gap-3">
+                             {['No Sizes', 'Clothing', 'Shoes'].map(type => (
+                               <button
+                                 key={type}
+                                 type="button"
+                                 onClick={() => setFormData({ ...formData, sizeType: type === 'No Sizes' ? '' : type, sizes: [] })}
+                                 className={`flex-1 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                                   (type === 'No Sizes' ? formData.sizeType === '' : formData.sizeType === type)
+                                     ? 'bg-white text-black border-white shadow-xl'
+                                     : 'bg-white/5 border-white/5 text-white/40 hover:border-white/10'
+                                 }`}
+                               >
+                                 {type}
+                               </button>
+                             ))}
+                           </div>
+                        </div>
+
+                        {formData.sizeType && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="space-y-4"
+                          >
+                             <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Available Sizes</label>
+                             <div className="flex flex-wrap gap-3">
+                                {(formData.sizeType === 'Clothing' ? ['XS', 'S', 'M', 'L', 'XL', 'XXL'] : ['6', '7', '8', '9', '10', '11', '12']).map(size => (
+                                  <button
+                                    key={size}
+                                    type="button"
+                                    onClick={() => handleSizeToggle(size)}
+                                    className={`w-14 h-14 rounded-xl text-xs font-bold transition-all border ${
+                                      formData.sizes.includes(size) 
+                                        ? 'bg-white text-black border-white shadow-xl' 
+                                        : 'bg-white/5 border-white/5 text-white/40 hover:border-white/10 hover:bg-white/10'
+                                    }`}
+                                  >
+                                    {size}
+                                  </button>
+                                ))}
+                             </div>
+                          </motion.div>
+                        )}
+                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputField label="Description" name="description" placeholder="Product description..." icon={AlignLeft} value={formData.description} onChange={handleFormChange} required />
-
-                    <div className="space-y-2">
-                       <label className="text-[9px] font-black uppercase tracking-[0.2em] text-subtext mb-1 ml-1 block">Size Type</label>
-                       <select 
-                         name="sizeType"
-                         value={formData.sizeType}
-                         onChange={(e) => setFormData({ ...formData, sizeType: e.target.value, sizes: [] })}
-                         className="w-full bg-surface border border-borderCustom rounded-lg py-2.5 px-3 text-[12px] font-bold text-textMain focus:outline-none focus:border-primary/40 transition-all appearance-none"
-                       >
-                         <option value="" className="bg-surface">No Sizes</option>
-                         <option value="Clothing" className="bg-surface">Clothing (XS - XXL)</option>
-                         <option value="Shoes" className="bg-surface">Shoes (6 - 12)</option>
-                       </select>
-                    </div>
-                  </div>
-
-                  {formData.sizeType && (
-                    <div className="space-y-2 bg-sectionSurface border border-borderCustom p-4 rounded-xl">
-                       <label className="text-[9px] font-black uppercase tracking-[0.2em] text-subtext ml-1 mb-3 block">Select Available Sizes</label>
-                       <div className="flex flex-wrap gap-2">
-                          {(formData.sizeType === 'Clothing' ? ['XS', 'S', 'M', 'L', 'XL', 'XXL'] : ['6', '7', '8', '9', '10', '11', '12']).map(size => (
-                            <button
-                              key={size}
-                              type="button"
-                              onClick={() => handleSizeToggle(size)}
-                              className={`w-10 h-10 rounded-lg text-[11px] font-bold transition-colors border ${formData.sizes.includes(size) ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-surface text-subtext hover:bg-sectionSurface border-borderCustom'}`}
-                            >
-                              {size}
-                            </button>
-                          ))}
-                       </div>
-                    </div>
-                  )}
-
-                  <div className="pt-4 flex gap-4">
+                  {/* Actions */}
+                  <div className="flex gap-4 pt-10 border-t border-white/5">
                     <button 
                       type="button" 
                       onClick={() => setShowAddModal(false)}
-                      className="flex-1 bg-surface hover:bg-sectionSurface text-textMain rounded-full py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all border border-borderCustom"
+                      className="flex-1 px-8 py-5 rounded-full text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-all"
                     >
                       Cancel
                     </button>
-                    <Button type="submit" isLoading={isSubmitting} className="flex-1">
-                      Add Product &rarr;
+                    <Button type="submit" isLoading={isSubmitting} className="flex-[2] !rounded-full !py-5 !text-xs !font-bold uppercase tracking-[0.2em] shadow-2xl">
+                      Save Product Entry &rarr;
                     </Button>
                   </div>
                 </form>
