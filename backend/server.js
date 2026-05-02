@@ -51,12 +51,20 @@ io.on('connection', (socket) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/retailbridge')
+if (!process.env.MONGO_URI) {
+  console.error('FATAL: MONGO_URI environment variable is not set. Exiting.');
+  process.exit(1);
+}
+
+mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('MongoDB Connected');
     await seedData();
   })
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Middleware
 app.use(cors({
