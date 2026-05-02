@@ -94,7 +94,15 @@ const Cart = () => {
 
                           <div className="flex items-center gap-10">
                              <div className="text-right space-y-1">
-                                <p className="text-xl font-black italic tracking-tighter">{formatPrice(item.price)}</p>
+                                {item.isNegotiated && (
+                                   <p className="text-[10px] font-bold text-accent uppercase tracking-widest italic mb-1">Deal_Price</p>
+                                )}
+                                <div className="flex items-center gap-3 justify-end">
+                                   <p className="text-xl font-black italic tracking-tighter">{formatPrice(item.price)}</p>
+                                   {item.isNegotiated && (
+                                      <span className="text-sm font-bold text-white/20 line-through tracking-tighter italic">{formatPrice(item.originalPrice)}</span>
+                                   )}
+                                </div>
                                 <div className="flex items-center gap-4 justify-end">
                                    <button onClick={() => dispatch(updateQuantity({ id: item._id, quantity: Math.max(1, item.quantity - 1) }))} className="text-white/20 hover:text-white"><Minus size={12} /></button>
                                    <span className="text-xs font-black italic">{item.quantity}</span>

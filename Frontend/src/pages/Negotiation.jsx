@@ -146,8 +146,13 @@ const Negotiation = () => {
   };
 
   const handleAcceptDeal = async () => {
+    const lastPrice = prompt("Enter final agreed price (₹):", negotiation.currentOffer);
+    if (!lastPrice) return;
+    
     try {
-      const res = await api.patch(`/negotiations/${negotiation._id}/accept`);
+      const res = await api.patch(`/negotiations/${negotiation._id}/accept`, { 
+        finalPrice: parseInt(lastPrice) 
+      });
       setNegotiation(res.data);
       toast.success('Deal accepted! Price updated in cart.');
       const detailsRes = await api.get(`/negotiations/${negotiation._id}`);
@@ -223,8 +228,8 @@ const Negotiation = () => {
     </div>
   );
 
-  const product = negotiation.product;
-  const store = negotiation.store;
+  const product = negotiation?.product || {};
+  const store = negotiation?.store || {};
   const isRetailer = user?.role === 'retailer';
 
   return (
@@ -268,8 +273,8 @@ const Negotiation = () => {
               className="relative aspect-square rounded-[2rem] overflow-hidden bg-background border border-white/5 shadow-inner group/img"
             >
               <img 
-                src={product.image} 
-                alt={product.name} 
+                src={product?.image || ''} 
+                alt={product?.name || 'Asset'} 
                 className="w-full h-full object-contain p-8 group-hover/img:scale-110 transition-transform duration-[2000ms] grayscale-[0.2] group-hover/img:grayscale-0" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
@@ -282,25 +287,25 @@ const Negotiation = () => {
             </motion.div>
 
             <div className="space-y-3">
-              <h1 className="text-2xl font-black tracking-tighter leading-tight uppercase italic italic-shadow">{product.name}</h1>
+              <h1 className="text-2xl font-black tracking-tighter leading-tight uppercase italic italic-shadow">{product?.name || 'Loading Asset...'}</h1>
               <div className="flex items-center gap-3">
                  <span className="px-3 py-1 bg-white/5 rounded-lg border border-white/10 text-[9px] font-black text-subtext uppercase tracking-widest">
                    {product.category}
                  </span>
                  <span className="w-1 h-1 rounded-full bg-accent/50" />
-                 <span className="text-[9px] font-mono text-subtext/40">ID: {product._id.slice(-8).toUpperCase()}</span>
+                 <span className="text-[9px] font-mono text-subtext/40">ID: {product?._id ? product._id.slice(-8).toUpperCase() : 'PENDING'}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5">
                 <p className="text-[8px] font-black text-subtext uppercase tracking-[0.2em] mb-1.5">Original Price</p>
-                <p className="text-xl font-black tracking-tighter">₹{product.price.toLocaleString()}</p>
+                <p className="text-xl font-black tracking-tighter">₹{product?.price?.toLocaleString() || '0'}</p>
               </div>
               <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5">
                 <p className="text-[8px] font-black text-accent uppercase tracking-[0.2em] mb-1.5">Current Delta</p>
                 <p className="text-xl font-black tracking-tighter text-accent italic">
-                   {negotiation.currentOffer ? `-₹${(product.price - negotiation.currentOffer).toLocaleString()}` : '0.00'}
+                   {negotiation.currentOffer && product?.price ? `-₹${(product.price - negotiation.currentOffer).toLocaleString()}` : '0.00'}
                 </p>
               </div>
             </div>
