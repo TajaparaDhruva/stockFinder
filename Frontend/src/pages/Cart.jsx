@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Minus, Plus, Trash2, ShieldCheck, Lock, Tag, ShoppingBag } from 'lucide-react';
-import { removeFromCart, updateQuantity, clearCart, addToCart, applyNegotiatedPrices } from '../redux/cartSlice';
-import { fetchProducts } from '../redux/productSlice';
+import { ArrowLeft, Minus, Plus, Trash2, ShieldCheck, Lock, ShoppingBag, CreditCard, ChevronRight, Activity, Command, Zap } from 'lucide-react';
+import { removeFromCart, updateQuantity, applyNegotiatedPrices } from '../redux/cartSlice';
 import Navbar from '../components/Navbar';
 import toast from 'react-hot-toast';
 
@@ -12,319 +11,178 @@ const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items);
-  const { items: allProducts, status: productsStatus } = useSelector((state) => state.products);
   const [promoCode, setPromoCode] = useState('');
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const taxRate = 0.12;
-  const tax = subtotal * taxRate;
+  const tax = subtotal * 0.12;
   const total = subtotal + tax;
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
-    if (allProducts.length === 0 && productsStatus !== 'loading') {
-      dispatch(fetchProducts());
-    }
     dispatch(applyNegotiatedPrices());
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    const timer = setTimeout(() => { window.scrollTo(0, 0); }, 100);
-    return () => clearTimeout(timer);
   }, []);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
-  const getStockBadge = (status) => {
-    switch (status) {
-      case 'IN_STOCK': return { color: 'text-green-500', dot: 'bg-green-500', label: 'IN STOCK' };
-      case 'LOW_STOCK': return { color: 'text-yellow-500', dot: 'bg-yellow-500', label: 'LOW STOCK' };
-      default: return { color: 'text-subtext', dot: 'bg-gray-400', label: status?.replace('_', ' ') || 'AVAILABLE' };
-    }
-  };
-
-  const handleRemove = (id, name) => {
-    dispatch(removeFromCart(id));
-    toast.success(`${name} removed from cart`);
-  };
-
-  const handleQuantityChange = (id, newQty) => {
-    if (newQty >= 1) dispatch(updateQuantity({ id, quantity: newQty }));
-  };
-
-  const cartIds = cartItems.map(i => i._id);
-  const recommended = allProducts
-    .filter(p => !cartIds.includes(p._id) && p.status !== 'OUT_OF_STOCK')
-    .slice(0, 4);
-
-  const handleAddRecommended = (product) => {
-    dispatch(addToCart({ ...product, quantity: 1 }));
-    toast.success(`${product.name} added to cart!`);
-  };
-
   return (
-    <div className="min-h-screen bg-background text-textMain font-sans">
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-accent/40">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-subtext hover:text-textMain mb-8 transition-colors group"
-        >
-          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-bold">Your Shopping Cart</span>
-        </button>
+      <main className="max-w-[1200px] mx-auto pt-32 pb-20 px-6">
+        
+        {/* COMMAND HEADER */}
+        <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8">
+           <div className="space-y-1">
+              <span className="text-[9px] font-black text-accent uppercase tracking-[0.5em] italic">//_COMMAND_LEDGER_v4</span>
+              <h1 className="text-4xl font-black italic tracking-tighter uppercase">Shopping_Archive</h1>
+           </div>
+           <div className="flex gap-8">
+              <div className="text-right">
+                 <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.4em] block">Active_Nodes</span>
+                 <p className="text-lg font-black italic">{cartItems.length.toString().padStart(2, '0')}</p>
+              </div>
+              <div className="text-right">
+                 <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.4em] block">Registry_Status</span>
+                 <p className="text-lg font-black italic text-emerald-500">SYNC_OK</p>
+              </div>
+           </div>
+        </div>
 
         {cartItems.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-32 border border-dashed border-borderCustom rounded-3xl bg-surface/20"
-          >
-            <ShoppingBag size={64} className="text-subtext mb-6" />
-            <h2 className="text-2xl font-bold text-textMain mb-2">Your Cart is Empty</h2>
-            <p className="text-subtext text-sm mb-8 font-medium">Discover premium products in our marketplace</p>
-            <button
-              onClick={() => navigate('/marketplace')}
-              className="px-8 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all transform hover:scale-105"
-            >
-              Browse Marketplace
-            </button>
-          </motion.div>
+          <div className="py-24 text-center border border-dashed border-white/10 rounded-[2rem] bg-white/[0.01]">
+             <ShoppingBag size={48} className="mx-auto text-white/10 mb-6" />
+             <p className="text-[10px] font-black uppercase tracking-[0.6em] text-white/20 mb-8">Archive_Is_Empty</p>
+             <button onClick={() => navigate('/marketplace')} className="bg-white text-black px-10 py-4 rounded-xl font-black text-[9px] uppercase tracking-[0.4em] hover:bg-accent transition-all">Browse_Inventory</button>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Cart Items */}
-            <div className="lg:col-span-8 space-y-4">
-              <AnimatePresence>
-                {cartItems.map((item, index) => {
-                  const badge = getStockBadge(item.status);
-                  return (
-                    <motion.div
-                      key={item._id}
-                      layout
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20, height: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="bg-surface border border-borderCustom rounded-2xl p-5 hover:border-primary/30 transition-all group"
-                    >
-                      <div className="flex gap-5">
-                        {/* Product Image */}
-                        <div
-                          onClick={() => navigate(`/product/${item._id}`)}
-                          className="w-24 h-24 rounded-xl bg-sectionSurface border border-borderCustom overflow-hidden flex-shrink-0 cursor-pointer group/img"
-                        >
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-contain p-2 group-hover/img:scale-110 transition-transform duration-500"
-                          />
-                        </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* ASSET ARCHIVE LIST */}
+            <div className="lg:col-span-8 space-y-3">
+              <AnimatePresence mode="popLayout">
+                {cartItems.map((item, index) => (
+                  <motion.div
+                    key={item._id}
+                    layout
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    className="group bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.04] hover:border-white/10 transition-all"
+                  >
+                    <div className="flex gap-8 items-center">
+                       {/* Compact Asset Thumbnail */}
+                       <div className="w-24 h-24 rounded-xl bg-black border border-white/5 flex-shrink-0 flex items-center justify-center relative overflow-hidden group-hover:border-accent/30 transition-all">
+                          <img src={item.image} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" alt="" />
+                          <div className="absolute top-1 right-1 text-[7px] font-black text-white/10">0{index+1}</div>
+                       </div>
 
-                        {/* Product Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start">
-                            <div className="min-w-0">
-                              <h3
-                                onClick={() => navigate(`/product/${item._id}`)}
-                                className="text-textMain font-bold text-lg leading-tight cursor-pointer hover:text-primary transition-colors truncate"
-                              >
-                                {item.name}
-                              </h3>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[10px] text-subtext font-bold uppercase tracking-widest">
-                                  {item.category}
-                                </span>
-                                {item.description && (
-                                  <>
-                                    <span className="w-1 h-1 rounded-full bg-borderCustom"></span>
-                                    <span className="text-[10px] text-subtext font-medium truncate max-w-[200px]">
-                                      {item.description.split('.')[0]}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                              {/* Stock Badge */}
-                              <div className="flex items-center gap-1.5 mt-2">
-                                <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`}></span>
-                                <span className={`text-[10px] font-bold ${badge.color}`}>{badge.label}</span>
-                              </div>
-                            </div>
-
-                            {/* Price */}
-                            <div className="text-right flex-shrink-0 ml-4">
-                              <p className="text-textMain font-black text-lg tracking-tight">{formatPrice(item.price)}</p>
-                              {item.isNegotiated && (
-                                <span className="text-[9px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 mt-1 block">
-                                  Negotiated
-                                </span>
-                              )}
-                            </div>
+                       {/* Data Segment */}
+                       <div className="flex-1 flex justify-between items-center">
+                          <div className="space-y-1">
+                             <div className="flex items-center gap-3">
+                                <span className="text-[8px] font-black text-accent uppercase tracking-[0.4em] italic">{item.category}</span>
+                                <span className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em]">{item._id.slice(-6)}</span>
+                             </div>
+                             <h3 className="text-xl font-black italic uppercase tracking-tight">{item.name}</h3>
+                             <p className="text-[9px] text-white/40 font-medium tracking-wide line-clamp-1">{item.description || "Technical asset parameters synchronized from registry."}</p>
                           </div>
 
-                          {/* Quantity & Remove */}
-                          <div className="flex items-center justify-between mt-4">
-                            <div className="flex items-center gap-3 bg-sectionSurface border border-borderCustom rounded-xl p-1">
-                              <button
-                                onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                                className="w-8 h-8 flex items-center justify-center hover:bg-surface rounded-lg transition-colors text-subtext hover:text-textMain"
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <span className="text-sm font-black w-6 text-center">{item.quantity}</span>
-                              <button
-                                onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                                className="w-8 h-8 flex items-center justify-center hover:bg-surface rounded-lg transition-colors text-subtext hover:text-textMain"
-                              >
-                                <Plus size={14} />
-                              </button>
-                            </div>
-
-                            <button
-                              onClick={() => handleRemove(item._id, item.name)}
-                              className="flex items-center gap-2 text-subtext hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition-colors group/rm"
-                            >
-                              <Trash2 size={14} className="group-hover/rm:scale-110 transition-transform" />
-                              Remove
-                            </button>
+                          <div className="flex items-center gap-10">
+                             <div className="text-right space-y-1">
+                                <p className="text-xl font-black italic tracking-tighter">{formatPrice(item.price)}</p>
+                                <div className="flex items-center gap-4 justify-end">
+                                   <button onClick={() => dispatch(updateQuantity({ id: item._id, quantity: Math.max(1, item.quantity - 1) }))} className="text-white/20 hover:text-white"><Minus size={12} /></button>
+                                   <span className="text-xs font-black italic">{item.quantity}</span>
+                                   <button onClick={() => dispatch(updateQuantity({ id: item._id, quantity: item.quantity + 1 }))} className="text-white/20 hover:text-white"><Plus size={12} /></button>
+                                </div>
+                             </div>
+                             <button onClick={() => { dispatch(removeFromCart(item._id)); toast.success('DE_SYNC_OK'); }} className="text-white/10 hover:text-red-500 transition-colors">
+                                <Trash2 size={14} />
+                             </button>
                           </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                       </div>
+                    </div>
+                  </motion.div>
+                ))}
               </AnimatePresence>
             </div>
 
-            {/* Order Summary */}
+            {/* VALUATION CONSOLE */}
             <div className="lg:col-span-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-surface border border-borderCustom rounded-2xl p-7 sticky top-28"
-              >
-                <h2 className="text-lg font-black uppercase tracking-widest mb-6">Order Summary</h2>
+               <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-8 space-y-10 backdrop-blur-2xl sticky top-32">
+                  <div className="space-y-6">
+                     <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-black text-accent uppercase tracking-[0.5em] italic">Valuation_Log</span>
+                        <div className="h-[1px] flex-1 bg-white/5" />
+                     </div>
+                     <div className="space-y-4">
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+                           <span>Sub_Process</span>
+                           <span className="text-white italic">{formatPrice(subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+                           <span>Logistics</span>
+                           <span className="text-emerald-500 italic">CREDIT_GRANTED</span>
+                        </div>
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+                           <span>Regulatory_GST</span>
+                           <span className="text-white italic">{formatPrice(tax)}</span>
+                        </div>
+                     </div>
+                  </div>
 
-                <div className="space-y-4 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-subtext font-medium">Subtotal ({totalItems} items)</span>
-                    <span className="text-textMain font-bold">{formatPrice(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-subtext font-medium">Shipping</span>
-                    <span className="text-green-500 font-bold text-xs uppercase tracking-widest">FREE</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-subtext font-medium">Tax (GST 12%)</span>
-                    <span className="text-textMain font-bold">{formatPrice(tax)}</span>
+                  <div className="pt-8 border-t border-white/5">
+                     <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.4em] block mb-2 italic">Final_Allocation</span>
+                     <p className="text-5xl font-black italic tracking-tighter text-white leading-none">{formatPrice(total)}</p>
                   </div>
 
-                  <div className="border-t border-borderCustom pt-4 mt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-subtext uppercase tracking-widest">Total Amount</span>
-                    </div>
-                    <p className="text-3xl font-black text-textMain tracking-tighter mt-1">{formatPrice(total)}</p>
+                  <div className="space-y-4">
+                     <button
+                       onClick={() => toast.success('Initializing Checkout...')}
+                       className="w-full bg-white text-black py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.4em] hover:bg-accent transition-all flex items-center justify-center gap-3"
+                     >
+                       <CreditCard size={12} />
+                       Process_Checkout
+                     </button>
+                     <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value)}
+                          placeholder="PROMO_CODE"
+                          className="flex-1 bg-black border border-white/5 rounded-xl px-4 py-3 text-[9px] text-white placeholder:text-white/20 font-black tracking-widest focus:outline-none focus:border-accent/30 transition-all"
+                        />
+                        <button className="px-6 py-3 bg-white/5 border border-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                          Apply
+                        </button>
+                     </div>
                   </div>
-                </div>
 
-                {/* Checkout Button */}
-                <button
-                  onClick={() => toast.success('Proceeding to checkout...')}
-                  className="w-full mt-6 bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3"
-                >
-                  Proceed to Checkout
-                </button>
-
-                {/* Promo Code */}
-                <div className="mt-6">
-                  <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-3 text-center">Promo Code</p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Enter code"
-                      className="flex-1 bg-sectionSurface border border-borderCustom rounded-xl px-4 py-3 text-xs text-textMain placeholder:text-subtext font-medium focus:outline-none focus:border-primary/50 transition-colors"
-                    />
-                    <button className="px-5 py-3 bg-sectionSurface border border-borderCustom rounded-xl text-[10px] font-black uppercase tracking-widest text-textMain hover:bg-surface transition-colors">
-                      Apply
-                    </button>
+                  <div className="pt-6 border-t border-white/5 flex items-center justify-center gap-6 opacity-30">
+                     <div className="flex items-center gap-2"><ShieldCheck size={12} /><span className="text-[7px] font-black uppercase tracking-widest">SSL_SYNC</span></div>
+                     <div className="flex items-center gap-2"><Lock size={12} /><span className="text-[7px] font-black uppercase tracking-widest">AES_256</span></div>
                   </div>
-                </div>
-
-                {/* Trust Badges */}
-                <div className="mt-6 space-y-3 pt-4 border-t border-borderCustom">
-                  <div className="flex items-center gap-3 text-subtext">
-                    <ShieldCheck size={16} className="text-green-500 flex-shrink-0" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Authenticity Guaranteed</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-subtext">
-                    <Lock size={16} className="text-green-500 flex-shrink-0" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Secure Transaction SSL</span>
-                  </div>
-                </div>
-              </motion.div>
+               </div>
             </div>
+
           </div>
         )}
 
-        {/* Recommendations */}
-        {recommended.length > 0 && (
-          <section className="mt-20">
-            <h2 className="text-xl font-bold text-textMain mb-8">Frequently Bought Together</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {recommended.map((product) => (
-                <motion.div
-                  key={product._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-surface border border-borderCustom rounded-2xl overflow-hidden hover:border-primary/30 transition-all group"
-                >
-                  <div
-                    onClick={() => navigate(`/product/${product._id}`)}
-                    className="aspect-square bg-sectionSurface overflow-hidden cursor-pointer"
-                  >
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h4 className="text-textMain font-bold text-sm truncate">{product.name}</h4>
-                    <p className="text-primary font-black text-sm mt-1">{formatPrice(product.price)}</p>
-                    <button
-                      onClick={() => handleAddRecommended(product)}
-                      className="w-full mt-3 py-2.5 bg-sectionSurface hover:bg-surface border border-borderCustom rounded-xl text-[10px] font-black uppercase tracking-widest text-textMain transition-all hover:border-primary/30"
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </section>
-        )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-borderCustom bg-background py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-textMain text-sm font-bold tracking-[0.2em] uppercase">LUXE RETAIL</span>
-            <span className="text-subtext text-xs">&copy; 2024 Intelligent Commerce Systems.</span>
-          </div>
-          <div className="flex gap-6">
-            <span className="text-subtext text-xs hover:text-textMain cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="text-subtext text-xs hover:text-textMain cursor-pointer transition-colors">Terms of Service</span>
-            <span className="text-subtext text-xs hover:text-textMain cursor-pointer transition-colors">Help Center</span>
-          </div>
+      {/* Footer Meta */}
+      <footer className="mt-20 border-t border-white/5 py-12">
+        <div className="max-w-[1200px] mx-auto px-6 flex justify-between items-center text-[9px] font-black text-white/20 uppercase tracking-[0.4em] italic">
+           <span>Luxe_Archive_Terminal_v4.2.1</span>
+           <div className="flex gap-8">
+              <span className="hover:text-white cursor-pointer transition-colors">Privacy_Log</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Audit_Support</span>
+           </div>
         </div>
       </footer>
     </div>
