@@ -17,8 +17,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['https://stockfinder-dhruva.netlify.app', 'http://localhost:5173'],
-    methods: ['GET', 'POST', 'PATCH']
+    origin: [
+      'https://stockfinder-dhruva.netlify.app',
+      /\.vercel\.app$/,
+      'http://localhost:5173'
+    ],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
   }
 });
 
@@ -68,7 +72,19 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Middleware
 app.use(cors({
-  origin: ['https://stockfinder-dhruva.netlify.app', 'http://localhost:5173'],
+  origin: (origin, callback) => {
+    const allowed = [
+      'https://stockfinder-dhruva.netlify.app',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    // Allow any vercel.app subdomain
+    if (!origin || allowed.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
