@@ -96,6 +96,12 @@ app.use('/api/stores', storeRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('[Global Error Handler] STACK:', err.stack);
+  res.status(500).json({ success: false, message: err.message });
+});
+
 const seedData = async () => {
   try {
     const existingSeededStore = await Store.findById('662a00000000000000000001');
