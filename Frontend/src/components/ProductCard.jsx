@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
 import toast from 'react-hot-toast';
-import { Plus, Maximize2, ShoppingBag } from 'lucide-react';
+import { Plus, Maximize2, ShoppingBag, Edit, Trash2 } from 'lucide-react';
+import api from '../services/api';
 
 const ProductCard = ({ product, viewMode = 'grid' }) => {
   const navigate = useNavigate();
@@ -29,6 +30,21 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
     mouseY.set(e.clientY - rect.top);
   };
 
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (!window.confirm('Permanently remove this asset from inventory?')) return;
+    
+    try {
+      const response = await api.delete(`/stores/my-store/products/${product._id}`);
+      if (response.data.success) {
+        toast.success('Asset decommissioned');
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error('Failed to delete asset');
+    }
+  };
+
   const formattedPrice = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -43,7 +59,7 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
         initial={{ opacity: 0, x: -20 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        onClick={() => navigate(`/product/${product._id}`)}
+        onClick={() => navigate(isRetailer ? `/dashboard/edit-product/${product._id}` : `/product/${product._id}`)}
         className="group relative flex flex-col md:flex-row h-auto md:h-64 w-full bg-[#050505] overflow-hidden cursor-pointer rounded-[2.5rem] border border-white/5"
       >
         {/* Left Section: Image with Lens Effect */}
@@ -119,6 +135,18 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
                 </div>
              </div>
 
+             {isRetailer && (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/dashboard/edit-product/${product._id}`);
+                  }}
+                  className="flex items-center gap-3 bg-accent text-white px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-xl"
+                >
+                   Edit Product
+                   <Edit size={14} />
+                </button>
+             )}
              {!isSoldOut && !isRetailer && (
                 <button 
                   onClick={(e) => {
@@ -145,7 +173,7 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      onClick={() => navigate(`/product/${product._id}`)}
+      onClick={() => navigate(isRetailer ? `/dashboard/edit-product/${product._id}` : `/product/${product._id}`)}
       className="group relative aspect-[4/5] w-full bg-[#050505] overflow-hidden cursor-pointer rounded-[2.5rem] border border-white/5"
     >
       {/* Background Layer: Grayscale & Blurred */}
@@ -196,11 +224,28 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
             <span className="text-[9px] font-black text-accent uppercase tracking-[0.5em] opacity-40">Ref_0{product._id?.slice(-3)}</span>
             <span className="text-xs font-black uppercase tracking-widest">{formattedPrice}</span>
          </div>
-         <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full border border-white/10 backdrop-blur-xl flex items-center justify-center group-hover:border-accent/40 transition-colors">
-               <Maximize2 size={14} className="text-white/40 group-hover:text-accent transition-colors" />
-            </div>
-         </div>
+          <div className="flex items-center gap-4">
+             {isRetailer ? (
+                <div className="flex gap-2 relative z-30">
+                   <div 
+                     onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/edit-product/${product._id}`); }}
+                     className="w-10 h-10 rounded-full border border-accent/40 bg-accent/10 backdrop-blur-xl flex items-center justify-center transition-all hover:bg-accent group/edit pointer-events-auto"
+                   >
+                      <Edit size={14} className="text-accent group-hover/edit:text-white transition-colors" />
+                   </div>
+                   <div 
+                     onClick={handleDelete}
+                     className="w-10 h-10 rounded-full border border-red-500/40 bg-red-500/10 backdrop-blur-xl flex items-center justify-center transition-all hover:bg-red-500 group/delete pointer-events-auto"
+                   >
+                      <Trash2 size={14} className="text-red-500 group-hover/delete:text-white transition-colors" />
+                   </div>
+                </div>
+             ) : (
+                <div className="w-10 h-10 rounded-full border border-white/10 backdrop-blur-xl flex items-center justify-center group-hover:border-accent/40 transition-colors">
+                   <Maximize2 size={14} className="text-white/40 group-hover:text-accent transition-colors" />
+                </div>
+             )}
+          </div>
       </div>
 
       {/* Minimalist Bottom Info */}
@@ -217,6 +262,18 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
                {product.store?.name || 'Authorized Outlet'}
             </span>
             
+            {isRetailer && (
+               <button 
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   navigate(`/dashboard/edit-product/${product._id}`);
+                 }}
+                 className="flex items-center gap-3 bg-accent text-white px-6 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-2xl"
+               >
+                  Modify Asset
+                  <Edit size={14} />
+               </button>
+            )}
             {!isSoldOut && !isRetailer && (
                <button 
                  onClick={(e) => {

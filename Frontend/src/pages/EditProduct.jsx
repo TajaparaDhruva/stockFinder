@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Package, Tag, IndianRupee, Image as ImageIcon, AlignLeft, Info } from 'lucide-react';
+import { Package, Tag, IndianRupee, Image as ImageIcon, AlignLeft, Info, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import Navbar from '../components/Navbar';
@@ -86,6 +86,23 @@ const EditProduct = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update product');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await api.delete(`/stores/my-store/products/${id}`);
+      if (response.data.success) {
+        toast.success('Product removed successfully');
+        navigate('/products');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete product');
     } finally {
       setIsLoading(false);
     }
@@ -195,15 +212,23 @@ const EditProduct = () => {
             required
           />
 
-          <div className="pt-4 flex gap-4">
+          <div className="pt-4 flex flex-col sm:flex-row gap-4">
             <button 
               type="button" 
               onClick={() => navigate('/products')}
-              className="flex-1 bg-sectionSurface hover:bg-surface text-textMain rounded-full py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all border border-borderCustom"
+              className="px-8 bg-sectionSurface hover:bg-surface text-textMain rounded-full py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all border border-borderCustom"
             >
               Cancel
             </button>
-            <Button type="submit" isLoading={isLoading} className="flex-1">
+            <button 
+              type="button" 
+              onClick={handleDelete}
+              className="px-8 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-full py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all border border-red-500/20 flex items-center justify-center gap-2"
+            >
+              <Trash2 size={16} />
+              Delete Product
+            </button>
+            <Button type="submit" isLoading={isLoading} className="flex-1 !rounded-full !py-4">
               Save Changes &rarr;
             </Button>
           </div>

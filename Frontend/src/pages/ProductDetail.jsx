@@ -137,26 +137,38 @@ const ProductDetail = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button 
-                onClick={() => {
-                  dispatch(addToCart({ 
-                    ...product, 
-                    quantity, 
-                    negotiatedPrice: negotiation?.negotiatedPrice 
-                  }));
-                  toast.success(negotiation ? 'NEGOTIATED ASSET SYNCED' : 'SYNCED TO CART');
-                }}
-                className="bg-white text-black py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-accent transition-all shadow-xl shadow-white/5"
-              >
-                Sync_Cart
-              </button>
-              <button 
-                onClick={() => navigate(`/negotiate/${id}`)}
-                className={`border py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] italic transition-all ${negotiation ? 'border-accent text-accent bg-accent/5 cursor-default' : 'border-white/20 hover:border-accent hover:text-accent'}`}
-                disabled={!!negotiation}
-              >
-                {negotiation ? 'Deal_Accepted' : 'Negotiate'}
-              </button>
+              {user?.role === 'retailer' ? (
+                <button 
+                  onClick={() => navigate(`/dashboard/edit-product/${id}`)}
+                  className="col-span-2 bg-accent text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all shadow-xl flex items-center justify-center gap-3"
+                >
+                  <Command size={14} />
+                  Edit_Product_Parameters
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => {
+                      dispatch(addToCart({ 
+                        ...product, 
+                        quantity, 
+                        negotiatedPrice: negotiation?.negotiatedPrice 
+                      }));
+                      toast.success(negotiation ? 'NEGOTIATED ASSET SYNCED' : 'SYNCED TO CART');
+                    }}
+                    className="bg-white text-black py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-accent transition-all shadow-xl shadow-white/5"
+                  >
+                    Sync_Cart
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/negotiate/${id}`)}
+                    className={`border py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] italic transition-all ${negotiation ? 'border-accent text-accent bg-accent/5 cursor-default' : 'border-white/20 hover:border-accent hover:text-accent'}`}
+                    disabled={!!negotiation}
+                  >
+                    {negotiation ? 'Deal_Accepted' : 'Negotiate'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
